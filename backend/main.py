@@ -255,7 +255,3 @@ async def generate_ean13(
         raise HTTPException(status_code=400, detail=f"Error generating EAN13 barcode: {str(e)}")
 
 
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy", "service": "Medical Barcode Generator"}
