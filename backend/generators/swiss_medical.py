@@ -2,26 +2,18 @@ from typing import Any
 import qrcode
 from qrcode.image.pil import PilImage
 from io import BytesIO
-import re
 from fastapi.responses import Response
 from fastapi import HTTPException
+from models.barcode_models import SwissMedicalRequest
 
 
-def generate_swiss_medical_barcode(gtin: str, lot: str, expiry: str, serial: str = "") -> Response:
+def generate_swiss_medical_barcode(request: SwissMedicalRequest) -> Response:
     """Generate Swiss Medical Code (GS1 DataMatrix)"""
     try:
-        # Validate GTIN (should be 14 digits)
-        if not re.match(r"^\d{14}$", gtin):
-            raise ValueError("GTIN must be 14 digits")
-
-        # Validate expiry date format
-        if not re.match(r"^\d{6}$", expiry):
-            raise ValueError("Expiry date must be YYMMDD format")
-
         # Build GS1 format string
-        gs1_data: str = f"(01){gtin}(10){lot}(17){expiry}"
-        if serial:
-            gs1_data += f"(21){serial}"
+        gs1_data: str = f"(01){request.gtin}(10){request.lot}(17){request.expiry}"
+        if request.serial:
+            gs1_data += f"(21){request.serial}"
 
         # Generate QR code (DataMatrix alternative using QR)
         qr = qrcode.QRCode(
@@ -42,7 +34,7 @@ def generate_swiss_medical_barcode(gtin: str, lot: str, expiry: str, serial: str
         return Response(
             content=buffer.getvalue(),
             media_type="image/png",
-            headers={"Content-Disposition": f"inline; filename=swiss_medical_{gtin}.png"},
+            headers={"Content-Disposition": f"inline; filename=swiss_medical_{request.gtin}.png"},
         )
     except Exception as e:
         raise HTTPException(
