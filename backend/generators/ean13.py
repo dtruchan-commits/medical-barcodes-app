@@ -1,3 +1,4 @@
+from typing import Any, Dict
 import barcode
 from barcode.writer import ImageWriter
 from io import BytesIO
@@ -17,15 +18,13 @@ def generate_ean13_barcode(code: str) -> Response:
         barcode_instance = ean13(code[:12], writer=ImageWriter())
 
         buffer = BytesIO()
-        barcode_instance.write(
-            buffer,
-            options={
-                "module_width": 0.33,
-                "module_height": 25,
-                "text_distance": 5,
-                "font_size": 12,
-            },
-        )
+        options: Dict[str, Any] = {
+            "module_width": 0.33,
+            "module_height": 25,
+            "text_distance": 5,
+            "font_size": 12,
+        }
+        barcode_instance.write(buffer, options=options)
         buffer.seek(0)
 
         return Response(
@@ -34,4 +33,5 @@ def generate_ean13_barcode(code: str) -> Response:
             headers={"Content-Disposition": f"inline; filename=ean13_{code}.png"},
         )
     except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error generating EAN13 barcode: {str(e)}")
         raise HTTPException(status_code=400, detail=f"Error generating EAN13 barcode: {str(e)}")

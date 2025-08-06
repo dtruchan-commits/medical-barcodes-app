@@ -1,3 +1,4 @@
+from typing import Any, Dict
 import barcode
 from barcode.writer import ImageWriter
 from io import BytesIO
@@ -10,7 +11,7 @@ def generate_laetus_barcode(patient_id: str, sample_id: str, lab_code: str = "LA
     """Generate Laetus-style medical barcode"""
     try:
         # Laetus format: LAB-PATIENTID-SAMPLEID
-        laetus_data = f"{lab_code}-{patient_id}-{sample_id}"
+        laetus_data: str = f"{lab_code}-{patient_id}-{sample_id}"
 
         # Validate format
         if not re.match(r"^[A-Z0-9]+-[A-Z0-9]+-[A-Z0-9]+$", laetus_data):
@@ -20,15 +21,13 @@ def generate_laetus_barcode(patient_id: str, sample_id: str, lab_code: str = "LA
         barcode_instance = code128(laetus_data, writer=ImageWriter())
 
         buffer = BytesIO()
-        barcode_instance.write(
-            buffer,
-            options={
-                "module_width": 0.2,
-                "module_height": 15,
-                "text_distance": 5,
-                "font_size": 10,
-            },
-        )
+        options: Dict[str, Any] = {
+            "module_width": 0.2,
+            "module_height": 15,
+            "text_distance": 5,
+            "font_size": 10,
+        }
+        barcode_instance.write(buffer, options=options)
         buffer.seek(0)
 
         return Response(
@@ -39,4 +38,5 @@ def generate_laetus_barcode(patient_id: str, sample_id: str, lab_code: str = "LA
     except Exception as e:
         raise HTTPException(
             status_code=400, detail=f"Error generating Laetus barcode: {str(e)}"
+        )
         )

@@ -1,3 +1,8 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from fastapi.responses import Response
+
 from .code128 import generate_code128_barcode
 from .laetus import generate_laetus_barcode
 from .swiss_medical import generate_swiss_medical_barcode

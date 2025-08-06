@@ -1,4 +1,7 @@
-def get_api_examples():
+from typing import Dict, Any, List
+
+
+def get_api_examples() -> Dict[str, Any]:
     """Get example usage for all barcode generation endpoints"""
     return {
         "code128": {

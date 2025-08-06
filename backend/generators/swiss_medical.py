@@ -1,4 +1,6 @@
+from typing import Any
 import qrcode
+from qrcode.image.pil import PilImage
 from io import BytesIO
 import re
 from fastapi.responses import Response
@@ -17,7 +19,7 @@ def generate_swiss_medical_barcode(gtin: str, lot: str, expiry: str, serial: str
             raise ValueError("Expiry date must be YYMMDD format")
 
         # Build GS1 format string
-        gs1_data = f"(01){gtin}(10){lot}(17){expiry}"
+        gs1_data: str = f"(01){gtin}(10){lot}(17){expiry}"
         if serial:
             gs1_data += f"(21){serial}"
 
@@ -31,7 +33,7 @@ def generate_swiss_medical_barcode(gtin: str, lot: str, expiry: str, serial: str
         qr.add_data(gs1_data)
         qr.make(fit=True)
 
-        img = qr.make_image(fill_color="black", back_color="white")
+        img: PilImage = qr.make_image(fill_color="black", back_color="white")
 
         buffer = BytesIO()
         img.save(buffer, format="PNG")
