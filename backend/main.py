@@ -20,7 +20,7 @@ from examples import get_api_examples
 app = FastAPI(title="Medical Barcode Generator API", version="1.0.0")
 
 
-@app.get("/")
+@app.get("/", tags=["System"])
 async def root() -> Dict[str, str]:
     return {
         "message": "Welcome to the Medical Barcode Generator API",
@@ -30,13 +30,13 @@ async def root() -> Dict[str, str]:
     }
 
 
-@app.get("/examples")
+@app.get("/examples", tags=["System"])
 async def get_examples() -> Dict[str, Any]:
     """Get example usage for all barcode generation endpoints"""
     return get_api_examples()
 
 
-@app.get("/generate/code128", responses={400: {"model": ErrorResponse}})
+@app.get("/generate/code128", responses={400: {"model": ErrorResponse}}, tags=["Barcode Generation"])
 async def generate_code128(
     data: str = Query(..., description="Data to encode"),
     width: int = Query(2, description="Bar width"),
@@ -50,7 +50,7 @@ async def generate_code128(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.get("/generate/laetus", responses={400: {"model": ErrorResponse}})
+@app.get("/generate/laetus", responses={400: {"model": ErrorResponse}}, tags=["Barcode Generation"])
 async def generate_laetus(
     patient_id: str = Query(..., description="Patient ID"),
     sample_id: str = Query(..., description="Sample ID"),
@@ -64,7 +64,7 @@ async def generate_laetus(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.get("/generate/swiss-medical", responses={400: {"model": ErrorResponse}})
+@app.get("/generate/swiss-medical", responses={400: {"model": ErrorResponse}}, tags=["Barcode Generation"])
 async def generate_swiss_medical_code(
     gtin: str = Query(..., description="GTIN (Global Trade Item Number)"),
     lot: str = Query(..., description="Lot number"),
@@ -79,7 +79,7 @@ async def generate_swiss_medical_code(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.get("/generate/ean13", responses={400: {"model": ErrorResponse}})
+@app.get("/generate/ean13", responses={400: {"model": ErrorResponse}}, tags=["Barcode Generation"])
 async def generate_ean13(
     code: str = Query(..., description="EAN13 code (12 or 13 digits)")
 ) -> Response:
@@ -91,7 +91,7 @@ async def generate_ean13(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.get("/health")
+@app.get("/health", tags=["System"])
 async def health_check() -> Dict[str, str]:
     """Health check endpoint"""
     return {"status": "healthy", "service": "Medical Barcode Generator"}
